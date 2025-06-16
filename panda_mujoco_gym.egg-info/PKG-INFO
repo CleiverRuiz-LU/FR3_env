@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: panda_mujoco_gym
+Version: 0.1.0
+License-File: LICENSE
+Requires-Dist: gymnasium>=0.29.1
+Requires-Dist: mujoco>=2.3.3
+Requires-Dist: numpy>=1.23.5
