@@ -6,6 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "gymnasium>=0.29.1",
+        "gymnasium-robotics>=1.2.2",
         "mujoco>=2.3.3",
         "numpy>=1.23.5",
     ],
