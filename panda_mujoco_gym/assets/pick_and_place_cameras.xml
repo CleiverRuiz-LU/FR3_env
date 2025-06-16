@@ -5,7 +5,7 @@
       <flag multiccd="enable" warmstart="enable"/>
     </option>
     
-    <include file="panda_mocap.xml"/>
+    <include file="test.xml"/>
   
     <statistic center="0.3 0 0.4" extent="1"/>
   
@@ -24,6 +24,12 @@
     <worldbody>
       <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
       <camera name="watching" pos="1.669 -1.154 1.019" xyaxes="0.644 0.765 0.000 -0.250 0.210 0.945"/>
+      
+      <camera name="top_down" pos="0.4 0.0 1.5" xyaxes="1 0 0 0 1 0" fovy="45"/>
+      
+      <camera name="side_view" pos="1.0 0.0 0.4" xyaxes="0 1 0 -1 0 0" fovy="45"/>
+      
+      <camera name="front_view" pos="0.0 1.0 0.4" xyaxes="1 0 0 0 0 1" fovy="45"/>
 
       <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
   
@@ -35,6 +41,12 @@
         <joint type="free" damping="0.01" name="obj_joint"/>
           <geom name="obj_geom" mass="0.1" type="box" size="0.02 0.02 0.02" rgba="0 1 0 1" friction="1" condim="6"/>
           <site name="obj_site" pos="0 0 0" size="0.01" type="sphere"/>
+      </body>
+
+      <body name="link0" childclass="panda">
+        <body name="link7" pos="0.088 0 0" quat="1 1 0 0">
+          <camera name="wrist_camera" pos="0.05 0.0 0.0" xyaxes="0 0 1 0 1 0" fovy="60"/>
+        </body>
       </body>
   
     </worldbody>

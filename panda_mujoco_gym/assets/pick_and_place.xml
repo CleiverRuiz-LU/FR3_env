@@ -5,7 +5,7 @@
       <flag multiccd="enable" warmstart="enable"/>
     </option>
     
-    <include file="panda_mocap.xml"/>
+    <include file="panda_mocap_test.xml"/>
   
     <statistic center="0.3 0 0.4" extent="1"/>
   

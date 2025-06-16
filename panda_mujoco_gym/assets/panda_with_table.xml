@@ -1,5 +1,10 @@
-<mujoco model="panda">
-    <compiler angle="radian" meshdir="meshes"/>
+<mujoco model="panda scene">
+    <compiler angle="radian" meshdir="./meshes/" autolimits="true"/>
+  
+    <option integrator="Euler" noslip_iterations="3" timestep="0.002" cone="pyramidal">
+      <flag multiccd="enable" warmstart="enable"/>
+    </option>
+    
     <default>
       <default class="panda">
         <material specular="0.5" shininess="0.25"/>
@@ -34,18 +39,28 @@
       </default>
     </default>
   
+    <visual>
+      <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+      <rgba haze="0.15 0.25 0.35 1"/>
+      <global azimuth="120" elevation="-20"/>
+    </visual>
+  
     <asset>
+      <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+      <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+      <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+      <material name="table" rgba="0.8 0.8 0.8 1"/>
+      <mesh name="pandaBotTable" file="pandaBotTable.stl"/>
+      <mesh name="robotPlate" file="robotPlate.stl"/>
+
+      <!-- Robot materials -->
       <material class="panda" name="white" rgba="1 1 1 1"/>
       <material class="panda" name="off_white" rgba="0.901961 0.921569 0.929412 1"/>
       <material class="panda" name="black" rgba="0.25 0.25 0.25 1"/>
       <material class="panda" name="green" rgba="0 1 0 1"/>
       <material class="panda" name="light_blue" rgba="0.039216 0.541176 0.780392 1"/>
 
-      <!-- Bench Mesh -->
-      <mesh name="pandaBotTable" file="pandaBotTable.stl"/>
-      <mesh name="robotPlate" file="robotPlate.stl"/>
-
-      <!-- Collision meshes -->
+      <!-- Robot meshes -->
       <mesh name="link0_c" file="link0.stl"/>
       <mesh name="link1_c" file="link1.stl"/>
       <mesh name="link2_c" file="link2.stl"/>
@@ -57,8 +72,6 @@
       <mesh name="link6_c" file="link6.stl"/>
       <mesh name="link7_c" file="link7.stl"/>
       <mesh name="hand_c" file="hand.stl"/>
-  
-      <!-- Visual meshes -->
       <mesh file="link0_0.obj"/>
       <mesh file="link0_1.obj"/>
       <mesh file="link0_2.obj"/>
@@ -118,23 +131,26 @@
     </asset>
   
     <worldbody>
-      <light name="top" pos="0 0 2" mode="trackcom"/>
+      <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+      <camera name="watching" pos="1.669 -1.154 1.019" xyaxes="0.644 0.765 0.000 -0.250 0.210 0.945"/>
 
+      <!-- Floor -->
+      <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+  
+      <!-- Table and Plate -->
       <body>
         <geom mesh="pandaBotTable" material="off_white" class="visual"/>
+        <geom mesh="pandaBotTable" type="mesh" condim="6" friction="0.5 0.5 0.5" rgba="0.8 0.8 0.8 0.5"/>
         <body>
           <geom mesh="robotPlate" material="off_white" class="visual"/>
+          <geom mesh="robotPlate" type="mesh" condim="6" friction="0.5 0.5 0.5" rgba="0.8 0.8 0.8 0.5"/>
+          <!-- Add target site on the table -->
+          <site name="target" pos="0.4 0.0 0.7" size="0.02 0.02 0.02" rgba="0.5 0.7 0.5 1" type="box"/>
         </body>
       </body>
 
-      <body mocap="true" name="panda_mocap" pos="0.6 0 5.4">
-        <geom conaffinity="0" contype="0" pos="0 0 5" rgba="0 0.5 0 0.7" size="0.005 0.005 0.005" type="box"></geom>
-        <geom conaffinity="0" contype="0" pos="0 0 5" rgba="0 0.5 0 0.1" size="0.5 0.005 0.005" type="box"></geom>
-        <geom conaffinity="0" contype="0" pos="0 0 5" rgba="0 0.5 0 0.1" size="0.005 0.5 0.001" type="box"></geom>
-        <geom conaffinity="0" contype="0" pos="0 0 5" rgba="0 0.5 0 0.1" size="0.005 0.005 0.5" type="box"></geom>
-      </body>
-
-      <body name="link0" childclass="panda" pos="0 0 0.5992">
+      <!-- Robot -->
+      <body name="link0" childclass="panda" pos="0.0 0 0.6">
         <inertial mass="0.629769" pos="-0.041018 -0.00014 0.049974" fullinertia="0.00315 0.00388 0.004285 8.2904e-7 0.00015 8.2299e-6"/>
         <geom mesh="link0_0" material="off_white" class="visual"/>
         <geom mesh="link0_1" material="black" class="visual"/>
@@ -233,7 +249,6 @@
                         <geom mesh="hand_4" material="off_white" class="visual"/>
                         <geom mesh="hand_c" class="collision"/>
   
-                        <!-- refer to the panda_grasptarget in panda.urdf in panda_gym -->
                         <body name="ee_center_body" pos="0 0 0.105">
                             <site name='ee_center_site' size="0.01" group="3"/>
                         </body>
@@ -272,11 +287,14 @@
           </body>
         </body>
       </body>
-    </worldbody>
 
-    <!-- <equality>
-      <weld body1="panda_mocap" body2="ee_center_body" solimp="0.9 0.95 0.001" solref="0.02 1"/>
-    </equality> -->
+      <!-- Add movable object at top level -->
+      <body name="obj" pos="0.4 0.0 0.7" quat="1 0 0 0">
+        <joint type="free" damping="0.01" name="obj_joint"/>
+        <geom name="obj_geom" mass="0.1" type="box" size="0.02 0.02 0.02" rgba="0 1 0 1" friction="1" condim="6"/>
+        <site name="obj_site" pos="0 0 0" size="0.01" type="sphere"/>
+      </body>
+    </worldbody>
 
     <actuator>
       <general class="panda" name="actuator1" joint="joint1" gainprm="4500" biasprm="0 -4500 -450"/>
@@ -287,7 +305,6 @@
       <general class="panda" name="actuator6" joint="joint6" gainprm="2000" biasprm="0 -2000 -200" forcerange="-12 12" ctrlrange="-0.0175 3.7525"/>
       <general class="panda" name="actuator7" joint="joint7" gainprm="2000" biasprm="0 -2000 -200" forcerange="-12 12"/>
     </actuator>
-
 
     <actuator>
       <general name="r_gripper_finger_joint" joint="finger_joint1" class="panda" gainprm="500 0 0" biasprm="0 -500 -10" forcerange="-120 120" ctrlrange="0 0.04"/>
