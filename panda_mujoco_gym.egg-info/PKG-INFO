@@ -1,8 +1,10 @@
-Metadata-Version: 2.1
-Name: panda_mujoco_gym
+Metadata-Version: 2.4
+Name: panda-mujoco-gym
 Version: 0.1.0
 License-File: LICENSE
-Requires-Dist: gymnasium>=0.29.1
-Requires-Dist: gymnasium-robotics>=1.2.2
-Requires-Dist: mujoco>=2.3.3
-Requires-Dist: numpy>=1.23.5
+Requires-Dist: mujoco==2.3.3
+Requires-Dist: gymnasium==0.29.1
+Requires-Dist: gymnasium-robotics==1.2.2
+Requires-Dist: stable-baselines3==2.2.1
+Dynamic: license-file
+Dynamic: requires-dist
